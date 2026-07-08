@@ -1,0 +1,73 @@
+name: Auto Grade
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  java:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Compile Java
+        working-directory: java
+        run: javac Solution.java
+
+      - name: Run Java Test Cases
+        run: |
+          for i in 1 2 3
+          do
+            java -cp java Solution < testcases/input${i}.txt > actual.txt
+            diff -w actual.txt testcases/output${i}.txt
+          done
+
+  python:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Python Test Cases
+        run: |
+          for i in 1 2 3
+          do
+            python3 python/solution.py < testcases/input${i}.txt > actual.txt
+            diff -w actual.txt testcases/output${i}.txt
+          done
+
+  javascript:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run JavaScript Test Cases
+        run: |
+          for i in 1 2 3
+          do
+            node javascript/solution.js < testcases/input${i}.txt > actual.txt
+            diff -w actual.txt testcases/output${i}.txt
+          done
